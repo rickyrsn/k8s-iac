@@ -1,0 +1,32 @@
+helmDefaults:
+  kubeContext: some-kubeContext
+  timeout: 900
+
+templates:
+  default: &default
+    chart: stable/{{`{{ .Release.Name }}`}}
+    namespace: default
+    # This prevents helmfile exiting when it encounters a missing file
+    # Valid values are "Error", "Warn", "Info", "Debug". The default is "Error"
+    # Use "Debug" to make missing files errors invisible at the default log level(--log-level=INFO)
+    missingFileHandler: Error
+    values:
+    - values/dreamcatcher/{{`{{ .Release.Name }}`}}/values.yaml
+    # secrets:
+    # - values/orami-staging/{{`{{ .Release.Name }}`}}/secrets.yaml
+
+releases:
+  - name: some-release-name
+    <<: *default
+    namespace: default
+    chart: ../chart/some-chart-folder
+
+  - name: grafana
+    <<: *default
+    namespace: monitoring
+    chart: grafana/grafana
+
+  - name: prometheus
+    <<: *default
+    namespace: monitoring
+    chart: prometheus-community/prometheus%
